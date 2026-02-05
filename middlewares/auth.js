@@ -2,8 +2,15 @@
 
 let success=true;
 export const checkAuth = (req, res, next) => {
+    console.log("Checking Authentication");
+    console.log(req.body);
+    const {token}  = req.headers;
+    const {authorization} = req.headers;
+    console.log("Received Token:", token);
+    console.log("Received Authorization:", authorization);
    if(success){
         console.log("Authentication Checked");
+
         next();
    }else{
         console.log("Authentication Failed");
@@ -31,3 +38,18 @@ export const validateUserId = (req, res, next) => {
     next();
 };
 
+export const validate= (schema)=>(req,res,next)=>{
+    let result=schema.safeParse(req.body);
+    if(result.success){
+        next();
+    }
+    else{
+        const messages = result.error.issues.map(err => err.message);
+        console.log("Validation Errors:", messages);
+        return res.status(400).json({
+            success:false,
+            message: messages.join(', '),
+            errors: messages
+        });
+    }
+}
