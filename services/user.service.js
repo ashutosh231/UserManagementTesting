@@ -1,4 +1,5 @@
 import User from '../models/user.js';
+import Post from '../models/post.js';
 
 export const deleteUser = async (id) => {
     console.log("Deleting user with ID:", id);
@@ -42,7 +43,7 @@ export const getUserById = async (id) => {
 
 export const getAllUsers = async () => {
     console.log("Getting all users");
-    const users = await User.find().sort({ createdAt: 1 }).limit(2);
+    const users = await User.find().sort({ createdAt: 1 }).limit(4);
     return users;
 };
 
@@ -53,5 +54,33 @@ export const updateUserByEmail = async (email, updateData) => {
         { $set: updateData },
         { new: true, runValidators: true }
     );
+    return user;
+};
+
+export const createPost = async (title, content,user) => {
+    console.log("Creating post for", "Title:", title);
+    const newPost = await Post.create({
+        title,
+        content,
+        user
+    });
+    return newPost;
+};
+
+
+export const getAllPostss=async ()=>{
+    console.log("Getting all posts");
+    const posts=await Post.find().populate('user','name email');
+    return posts;
+}
+
+export const updatePasswordbyId = async (userId, newPassword) => {
+    console.log("Updating password for user ID:", userId);
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new Error("User not found");
+    }
+    user.password = newPassword;
+    await user.save();
     return user;
 };
